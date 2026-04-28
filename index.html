@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Knowledge Training Academy - Standalone</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;900&family=Playfair+Display:ital,wght@0,900;1,900&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Inter', sans-serif; background-color: #FDFCFB; color: #2D2D2D; }
+        .font-serif { font-family: 'Playfair Display', serif; }
+        .bg-orange-brand { background-color: #FF6B35; }
+        .text-orange-brand { color: #FF6B35; }
+        .shadow-orange { shadow-color: rgba(255, 107, 53, 0.3); }
+    </style>
+</head>
+<body>
+    <div id="root"></div>
+
+    <script>
+        // --- DONNÉES INJECTÉES ---
+        const UI = {
+            en: { registrationTitle: "Academy Registration", accessTraining: "Access Training", fullName: "Full Name", switch: "Français", week: "Week" },
+            fr: { registrationTitle: "Inscription à l'Académie", accessTraining: "Accéder à la formation", fullName: "Nom Complet", switch: "English", week: "Semaine" }
+        };
+
+        const CURRICULUM = {
+            fr: [{ id: 1, topic: "Fondamentaux et Esprit Digital", objectives: ["Comprendre le marketing digital", "Piliers de réussite", "Mindset"] }],
+            en: [{ id: 1, topic: "Fundamentals & Digital Mindset", objectives: ["Understand digital marketing", "Core pillars", "Growth mindset"] }]
+        };
+
+        // --- ÉTAT DE L'APPLICATION ---
+        let state = {
+            isRegistered: false,
+            lang: 'fr',
+            user: { name: '' }
+        };
+
+        // --- FONCTIONS DE RENDU ---
+        function render() {
+            const root = document.getElementById('root');
+            const t = UI[state.lang];
+
+            if (!state.isRegistered) {
+                root.innerHTML = renderRegistration(t);
+            } else {
+                root.innerHTML = renderDashboard(t);
+            }
+        }
+
+        function renderRegistration(t) {
+            return `
+                <div class="min-h-screen flex items-center justify-center p-6">
+                    <div class="max-w-md w-full bg-white p-10 rounded-[3rem] shadow-xl border border-gray-100 text-center">
+                        <div class="w-16 h-16 bg-orange-brand rounded-3xl flex items-center justify-center mx-auto mb-6 text-white shadow-lg">
+                            <svg width="32" height="32" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M12 14l9-5-9-5-9 5 9 5z"/><path d="M12 14l6.16-3.422a12.083 12.083 0 01.665 6.479A11.952 11.952 0 0012 20.055a11.952 11.952 0 00-6.824-2.998 12.078 12.078 0 01.665-6.479L12 14z"/></svg>
+                        </div>
+                        <h2 class="text-3xl font-serif font-black italic mb-4">${t.registrationTitle}</h2>
+                        <input type="text" id="userName" placeholder="${t.fullName}" class="w-full p-4 mb-4 border border-gray-200 rounded-2xl outline-none focus:border-orange-500 transition-all">
+                        <button onclick="register()" class="w-full py-5 bg-orange-brand text-white rounded-2xl font-bold text-lg shadow-lg hover:opacity-90 transition-all">
+                            ${t.accessTraining}
+                        </button>
+                    </div>
+                </div>`;
+        }
+
+        function renderDashboard(t) {
+            const weekData = CURRICULUM[state.lang][0];
+            return `
+                <div class="flex flex-col lg:flex-row h-screen">
+                    <aside class="w-full lg:w-80 bg-[#151515] text-white p-8">
+                        <div class="flex items-center gap-3 mb-10">
+                            <div class="w-10 h-10 bg-orange-brand rounded-xl flex items-center justify-center font-bold">K</div>
+                            <span class="font-bold">Knowledge Academy</span>
+                        </div>
+                        <nav class="space-y-2">
+                            <div class="text-[10px] uppercase tracking-widest text-gray-500 mb-4">Curriculum</div>
+                            <button class="w-full text-left p-3 rounded-lg bg-white/10 border-l-4 border-orange-brand">${weekData.topic}</button>
+                        </nav>
+                    </aside>
+                    <main class="flex-1 overflow-y-auto p-8 lg:p-12">
+                        <header class="flex justify-between items-center mb-12">
+                            <div>
+                                <p class="text-orange-brand font-mono uppercase text-xs tracking-widest">${t.week} 1</p>
+                                <h1 class="text-3xl font-bold">${weekData.topic}</h1>
+                            </div>
+                            <button onclick="toggleLang()" class="px-4 py-2 border border-gray-200 rounded-xl text-xs font-bold hover:bg-gray-50">${t.switch}</button>
+                        </header>
+                        <div class="bg-white border border-gray-100 rounded-[3rem] p-10 shadow-sm max-w-4xl">
+                            <h2 class="text-2xl font-bold mb-6 italic font-serif">Objectifs</h2>
+                            <ul class="space-y-4">
+                                ${weekData.objectives.map(obj => `<li class="flex gap-4 items-center"><span class="w-6 h-6 rounded-full bg-orange-100 text-orange-brand flex items-center justify-center text-xs">✓</span> ${obj}</li>`).join('')}
+                            </ul>
+                        </div>
+                    </main>
+                </div>`;
+        }
+
+        // --- ACTIONS ---
+        window.register = () => {
+            const name = document.getElementById('userName').value;
+            if(name) { state.user.name = name; state.isRegistered = true; render(); }
+        };
+
+        window.toggleLang = () => {
+            state.lang = state.lang === 'fr' ? 'en' : 'fr';
+            render();
+        };
+
+        render();
+    </script>
+</body>
+</html>
